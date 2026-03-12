@@ -11,6 +11,8 @@ terraform {
       version = "~> 3.0"
     }
   }
+
+  backend "azurerm" {}
 }
 
 provider "azurerm" {
@@ -18,7 +20,6 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-resource "azurerm_resource_group" "main" {
-  name     = "rg-${var.prefix}-"
-  location = var.location
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name
 }

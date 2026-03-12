@@ -16,6 +16,11 @@ variable "subscription_id" {
   default     = null
 }
 
+variable "resource_group_name" {
+  description = "Name of the existing resource group to deploy into"
+  type        = string
+}
+
 variable "image_name" {
   description = "Docker image repository name in ACR"
   type        = string
