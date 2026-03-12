@@ -1,5 +1,14 @@
+import logging
 import os
+
+from azure.monitor.opentelemetry import configure_azure_monitor
 from flask import Flask, jsonify
+
+# Configure Azure Monitor if connection string is available
+if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
+    configure_azure_monitor()
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -51,12 +60,14 @@ def allocate():
     block = bytearray(500 * 1024 * 1024)
     memory_blocks.append(block)
     total_mb = len(memory_blocks) * 500
+    logger.warning("Memory allocated: %d MB total", total_mb)
     return jsonify(total_mb=total_mb)
 
 
 @app.route("/free", methods=["POST"])
 def free():
     memory_blocks.clear()
+    logger.info("All memory freed")
     return jsonify(total_mb=0)
 
 

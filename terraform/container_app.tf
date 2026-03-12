@@ -1,20 +1,28 @@
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "logs-${var.prefix}-logs"
+  name                = "logs-${var.prefix}-swc"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
 
+resource "azurerm_application_insights" "main" {
+  name                = "ai-${var.prefix}-swc"
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
+  workspace_id        = azurerm_log_analytics_workspace.main.id
+  application_type    = "web"
+}
+
 resource "azurerm_container_app_environment" "main" {
-  name                       = "ace-${var.prefix}-env"
+  name                       = "ace-${var.prefix}-swc"
   resource_group_name        = data.azurerm_resource_group.main.name
   location                   = data.azurerm_resource_group.main.location
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
 }
 
 resource "azurerm_container_app" "main" {
-  name                         = "aca-${var.prefix}-app"
+  name                         = "aca-${var.prefix}-swc"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
@@ -22,6 +30,11 @@ resource "azurerm_container_app" "main" {
   secret {
     name  = "acr-password"
     value = azurerm_container_registry.main.admin_password
+  }
+
+  secret {
+    name  = "appinsights-connection-string"
+    value = azurerm_application_insights.main.connection_string
   }
 
   registry {
@@ -36,6 +49,11 @@ resource "azurerm_container_app" "main" {
       image  = "${azurerm_container_registry.main.login_server}/${var.image_name}:${var.image_tag}"
       cpu    = 1.0
       memory = "2Gi"
+
+      env {
+        name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        secret_name = "appinsights-connection-string"
+      }
     }
   }
 
