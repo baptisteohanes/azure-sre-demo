@@ -1,5 +1,5 @@
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${var.prefix}-logs"
+  name                = "logs-${var.prefix}-logs"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "PerGB2018"
@@ -7,14 +7,14 @@ resource "azurerm_log_analytics_workspace" "main" {
 }
 
 resource "azurerm_container_app_environment" "main" {
-  name                       = "${var.prefix}-env"
+  name                       = "ace-${var.prefix}-env"
   resource_group_name        = azurerm_resource_group.main.name
   location                   = azurerm_resource_group.main.location
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
 }
 
 resource "azurerm_container_app" "main" {
-  name                         = "${var.prefix}-app"
+  name                         = "aca-${var.prefix}-app"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"

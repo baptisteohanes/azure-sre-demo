@@ -1,5 +1,5 @@
 resource "azurerm_container_registry" "main" {
-  name                = "${replace(var.prefix, "-", "")}acr"
+  name                = "acr${replace(var.prefix, "-", "")}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Basic"
