@@ -47,8 +47,8 @@ resource "azurerm_container_app" "main" {
     container {
       name   = "${var.prefix}-container"
       image  = "${azurerm_container_registry.main.login_server}/${var.image_name}:${var.image_tag}"
-      cpu    = 1.0
-      memory = "2Gi"
+      cpu    = 0.25
+      memory = "0.5Gi"
 
       env {
         name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
